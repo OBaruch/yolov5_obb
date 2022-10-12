@@ -1,0 +1,27 @@
+## Scheduler parameters ##
+  
+#BSUB -J base                      # job name
+# #BSUB -o tensorflow-3.5.%J.stdout   # optional: have output written to specific fileh
+# #BSUB -e tensorflow-3.5.%J.stderr   # optional: have errors written to specific file
+#BSUB -q rb_ai_initiative               # optional: use highend nodes w/ Volta GPUs (default: Geforce GPUs)
+#BSUB -W 2:00                       # fill in desired wallclock time [hours,]minutes (hours are optional)
+#BSUB -n 1                          # min CPU cores,max CPU cores (max cores is optional)
+#BSUB -M 2048                       # fill in required amount of memory per CPU core(in Mbyte)
+# #BSUB -R "span[hosts=1]"            # optional: run on single host (if using more than 1 CPU core)
+# #BSUB -R "span[ptile=28]"           # optional: fill in to specify cores per node (max 28-40 depending on node type)
+# #BSUB -P myProject                  # optional: fill in cluster project
+#BSUB -gpu "num=1"
+
+echo $('start')
+module load conda/4.9.2
+module load cuda/10.2.89
+module load gcc/7.5.0
+
+conda activate yolov5
+
+module load proxy4server-access/
+proxy_on
+
+python train.py --data ../datasets/roboflow/data.yaml --epochs 10 --batch-size 1 --img 3840 --device 0 --exist-ok
+
+
